@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Викторина: Насколько хорошо ты знаешь Диляру?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Caveat:wght@600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a1f17; --card:#10291e; --ink:#eafff3; --muted:#8fbfa6;
+    --green:#3fd98a; --green-deep:#2bb873; --gold:#f5c451; --pink:#ff7eb6;
+    --line:#1d4233; --wrong:#e8736b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:
+      radial-gradient(1100px 600px at 15% -10%, #173a2a 0%, transparent 55%),
+      radial-gradient(900px 500px at 110% 10%, #1a4031 0%, transparent 50%),
+      var(--bg);
+    color:var(--ink); min-height:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px 18px; overflow-x:hidden; position:relative;
+  }
+
+  .balloons{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .balloon{position:absolute;bottom:-80px;font-size:34px;opacity:.18;animation:floatUp linear infinite;will-change:transform}
+  @keyframes floatUp{
+    0%{transform:translateY(0) rotate(-6deg);opacity:0}
+    10%{opacity:.22}
+    90%{opacity:.22}
+    100%{transform:translateY(-110vh) rotate(8deg);opacity:0}
+  }
+
+  .wrap{width:100%;max-width:560px;position:relative;z-index:1}
+  .card{
+    background:linear-gradient(180deg, var(--card), #0d2218);
+    border:1px solid var(--line); border-radius:26px;
+    padding:34px 28px; box-shadow:0 30px 70px -30px rgba(0,0,0,.7); position:relative;
+    overflow:hidden;
+    animation:cardIn .5s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes cardIn{
+    from{transform:translateY(14px) scale(.985);opacity:0}
+    to{transform:none;opacity:1}
+  }
+  .card.shake{animation:shake .45s}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%,60%{transform:translateX(-9px)}
+    40%,80%{transform:translateX(9px)}
+  }
+  .card.pulse{animation:pulse .5s}
+  @keyframes pulse{
+    0%{transform:scale(1)} 50%{transform:scale(1.015)} 100%{transform:scale(1)}
+  }
+
+  .eyebrow{font-family:'Unbounded',sans-serif;font-weight:500;letter-spacing:.18em;text-transform:uppercase;font-size:11px;color:var(--green)}
+  h1{font-family:'Unbounded',sans-serif;font-weight:900;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:14px 0 10px}
+  h1 .accent{color:var(--gold);display:inline-block;animation:wiggle 2.4s ease-in-out infinite}
+  @keyframes wiggle{
+    0%,100%{transform:rotate(0)}
+    25%{transform:rotate(-2deg)}
+    75%{transform:rotate(2deg)}
+  }
+  .lede{color:var(--muted);font-size:16px;line-height:1.5;margin-bottom:26px}
+  .btn{
+    width:100%;font-family:'Unbounded',sans-serif;font-weight:700;font-size:16px;
+    border:none;border-radius:16px;padding:17px;cursor:pointer;
+    background:linear-gradient(180deg,var(--green),var(--green-deep));color:#04190f;
+    transition:transform .12s ease, filter .12s ease, box-shadow .2s;
+    box-shadow:0 8px 24px -8px rgba(63,217,138,.55);
+  }
+  .btn:hover{filter:brightness(1.07);transform:translateY(-1px);box-shadow:0 12px 28px -8px rgba(63,217,138,.7)}
+  .btn:active{transform:scale(.985)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .btn.ghost{background:transparent;color:var(--green);border:1.5px solid var(--line);box-shadow:none}
+  .btn.gold{background:linear-gradient(180deg,var(--gold),#e0a83a);color:#2a1c00;box-shadow:0 8px 24px -8px rgba(245,196,81,.6)}
+
+  .field{
+    width:100%;background:#0e2419;border:1.5px solid var(--line);color:var(--ink);
+    border-radius:15px;padding:16px 18px;font-size:16px;font-family:'Manrope',sans-serif;
+    font-weight:600;margin-bottom:16px;transition:border-color .2s;
+  }
+  .field:focus{outline:none;border-color:var(--green)}
+  .field::placeholder{color:#5a8a72}
+
+  /* hero polaroid на стартовом экране */
+  .hero-pol{
+    width:170px;margin:0 auto 22px;background:#fafaf2;padding:10px 10px 32px;
+    border-radius:4px;box-shadow:0 22px 50px -16px rgba(0,0,0,.7), 0 2px 6px rgba(0,0,0,.4);
+    transform:rotate(-4deg);position:relative;
+    animation:dropIn .7s cubic-bezier(.2,.9,.3,1.4) both;
+  }
+  @keyframes dropIn{
+    from{transform:rotate(-12deg) translateY(-30px) scale(.7);opacity:0}
+    to{transform:rotate(-4deg) translateY(0) scale(1);opacity:1}
+  }
+  .hero-pol img{display:block;width:100%;height:170px;object-fit:cover;border-radius:2px;background:#222}
+  .hero-pol .cap{font-family:'Caveat',cursive;font-size:20px;color:#1a1a1a;text-align:center;margin-top:6px;line-height:1}
+  .hero-pol .tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-3deg);width:60px;height:18px;background:rgba(245,196,81,.55);border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+
+  .photo-ph{
+    width:120px;height:120px;border-radius:50%;margin:0 auto 18px;
+    display:grid;place-items:center;font-size:54px;
+    background:#0e2419;border:2px dashed var(--line);
+    animation:bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-6px)}
+  }
+
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px}
+  .count{font-size:13px;color:var(--muted);font-weight:600}
+  .pills{display:flex;gap:8px;align-items:center}
+  .score-pill{font-size:13px;font-weight:700;color:var(--gold);background:rgba(245,196,81,.1);border:1px solid rgba(245,196,81,.3);padding:5px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:5px}
+  .streak-pill{font-size:13px;font-weight:700;color:var(--pink);background:rgba(255,126,182,.1);border:1px solid rgba(255,126,182,.35);padding:5px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:5px;animation:streakPop .35s}
+  @keyframes streakPop{
+    from{transform:scale(.7);opacity:0}
+    50%{transform:scale(1.15)}
+    to{transform:scale(1);opacity:1}
+  }
+  .bar{height:7px;background:#10362658;border-radius:999px;overflow:hidden;margin-bottom:18px;position:relative}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold),var(--pink));background-size:200% 100%;border-radius:999px;transition:width .5s cubic-bezier(.2,.9,.3,1);animation:shimmer 3s linear infinite}
+  @keyframes shimmer{
+    0%{background-position:0% 50%}
+    100%{background-position:200% 50%}
+  }
+
+  /* polaroid для каждого вопроса */
+  .q-pol{
+    background:#fafaf2;padding:8px 8px 22px;border-radius:3px;
+    box-shadow:0 18px 40px -14px rgba(0,0,0,.7), 0 2px 6px rgba(0,0,0,.3);
+    margin:6px auto 22px;width:fit-content;max-width:88%;position:relative;
+    animation:polIn .5s cubic-bezier(.2,.9,.3,1.3) both;
+  }
+  .q-pol .tape{position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-2deg);width:54px;height:16px;background:rgba(245,196,81,.6);border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+  .q-pol img{display:block;width:100%;max-width:280px;height:180px;object-fit:cover;border-radius:2px;background:#222}
+  .q-pol .cap{font-family:'Caveat',cursive;font-size:18px;color:#1a1a1a;text-align:center;margin-top:4px;line-height:1.1}
+  @keyframes polIn{
+    from{transform:rotate(-9deg) translateY(-14px) scale(.9);opacity:0}
+    to{transform:rotate(var(--rot,-2deg)) translateY(0) scale(1);opacity:1}
+  }
+  .q-pol:hover{transform:rotate(0) scale(1.02);transition:transform .25s}
+
+  .q{font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(20px,4.6vw,25px);line-height:1.25;margin-bottom:22px;animation:slideUp .4s cubic-bezier(.2,.9,.3,1) both}
+  @keyframes slideUp{
+    from{transform:translateY(10px);opacity:0}
+    to{transform:none;opacity:1}
+  }
+
+  .opts{display:flex;flex-direction:column;gap:12px}
+  .opt{
+    text-align:left;background:#0e2419;border:1.5px solid var(--line);color:var(--ink);
+    border-radius:15px;padding:16px 18px;font-size:16px;font-weight:600;font-family:'Manrope',sans-serif;
+    cursor:pointer;display:flex;align-items:center;gap:13px;
+    transition:border-color .15s, background .15s, transform .12s;
+    position:relative;overflow:hidden;
+    animation:optIn .35s cubic-bezier(.2,.9,.3,1) both;
+  }
+  @keyframes optIn{
+    from{transform:translateY(8px);opacity:0}
+    to{transform:none;opacity:1}
+  }
+  .opt:nth-child(1){animation-delay:.05s}
+  .opt:nth-child(2){animation-delay:.12s}
+  .opt:nth-child(3){animation-delay:.19s}
+  .opt:nth-child(4){animation-delay:.26s}
+  .opt:hover:not(:disabled){border-color:var(--green);transform:translateX(3px)}
+  .opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .opt .dot{width:26px;height:26px;flex:0 0 26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--muted);transition:all .2s}
+  .opt.correct{border-color:var(--green);background:rgba(63,217,138,.13);animation:correctFlash .6s}
+  .opt.correct .dot{border-color:var(--green);background:var(--green);color:#04190f}
+  @keyframes correctFlash{
+    0%{box-shadow:0 0 0 0 rgba(63,217,138,.6)}
+    100%{box-shadow:0 0 0 14px rgba(63,217,138,0)}
+  }
+  .opt.wrong{border-color:var(--wrong);background:rgba(232,115,107,.12)}
+  .opt.wrong .dot{border-color:var(--wrong);background:var(--wrong);color:#2a0d0a}
+  .opt:disabled{cursor:default}
+  .opt .ripple{position:absolute;border-radius:50%;background:rgba(63,217,138,.35);transform:scale(0);animation:ripple .6s ease-out;pointer-events:none}
+  @keyframes ripple{to{transform:scale(4);opacity:0}}
+  .next{margin-top:22px}
+  .hidden{display:none}
+
+  .combo-flash{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:'Unbounded',sans-serif;font-weight:900;font-size:64px;
+    color:var(--gold);text-shadow:0 4px 24px rgba(245,196,81,.7);
+    pointer-events:none;animation:comboFlash 1.1s cubic-bezier(.2,.9,.3,1) forwards;
+    z-index:5;white-space:nowrap;
+  }
+  @keyframes comboFlash{
+    0%{transform:translate(-50%,-50%) scale(.4);opacity:0}
+    25%{transform:translate(-50%,-50%) scale(1.15);opacity:1}
+    70%{transform:translate(-50%,-50%) scale(1);opacity:1}
+    100%{transform:translate(-50%,-120%) scale(.85);opacity:0}
+  }
+
+  #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9}
+
+  .result{text-align:center}
+  .big-score{font-family:'Unbounded',sans-serif;font-weight:900;font-size:clamp(54px,16vw,86px);line-height:1;background:linear-gradient(90deg,var(--green),var(--gold),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0;animation:scorePop .8s cubic-bezier(.2,.9,.3,1.3) both}
+  @keyframes scorePop{
+    from{transform:scale(.5);opacity:0}
+    to{transform:scale(1);opacity:1}
+  }
+  .verdict{font-family:'Unbounded',sans-serif;font-weight:700;font-size:22px;margin-bottom:10px}
+  .confetti{font-size:54px;margin-bottom:6px;display:inline-block;animation:bigBob 1.4s ease-in-out infinite}
+  @keyframes bigBob{
+    0%,100%{transform:translateY(0) rotate(-6deg)}
+    50%{transform:translateY(-10px) rotate(8deg)}
+  }
+  .footer-note{margin-top:22px;font-size:12px;color:var(--muted);text-align:center;position:relative;z-index:1}
+
+  .lb-title{font-family:'Unbounded',sans-serif;font-weight:700;font-size:18px;margin:26px 0 14px;text-align:left}
+  .lb-row{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:14px;background:#0e2419;border:1px solid var(--line);margin-bottom:10px;animation:slideUp .4s both}
+  .lb-row.me{border-color:var(--gold);background:rgba(245,196,81,.08);box-shadow:0 0 0 1px var(--gold) inset}
+  .lb-rank{font-family:'Unbounded',sans-serif;font-weight:900;font-size:18px;width:30px;color:var(--muted)}
+  .lb-row:nth-child(1) .lb-rank{color:var(--gold)}
+  .lb-name{flex:1;font-weight:700}
+  .lb-score{font-weight:800;color:var(--green)}
+  .stats{display:flex;gap:12px;margin:18px 0}
+  .stat{flex:1;background:#0e2419;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  .stat b{display:block;font-family:'Unbounded',sans-serif;font-size:22px;color:var(--gold)}
+  .stat span{font-size:12px;color:var(--muted)}
+  .muted-small{font-size:13px;color:var(--muted);text-align:center;margin:14px 0}
+  .spinner{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;margin:30px auto;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .actions{display:flex;gap:10px;margin-top:18px}
+  .actions .btn{flex:1}
+
+  .mute{position:absolute;top:14px;right:16px;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;transition:background .2s;z-index:2}
+  .mute:hover{background:rgba(255,255,255,.05);color:var(--ink)}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="balloons" id="balloons" aria-hidden="true"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="wrap">
+  <div class="card" id="card"></div>
+  <p class="footer-note">С днём рождения, Диляра! 🌿✨</p>
+</div>
+
+<script>
+const HERO_PHOTO = "photos/130.jpg";
+const HERO_CAP = "С Днём Рождения!";
+
+// фото + подпись для каждого вопроса. Если не указано — без фото.
+const QUESTIONS = [
+  { q:"В каком городе родилась Диляра?", a:["Казань","Набережные Челны","Уфа","Москва"], correct:1,
+    photo:"photos/129.jpg", cap:"Татарстан, родные края" },
+  { q:"Сколько лет Диляра носила брекеты в первый раз?", a:["1 год","2 года","4 года","6 лет"], correct:2,
+    photo:"photos/114.jpg", cap:"Улыбка-миллион" },
+  { q:"Как звали лучшую подругу Диляры в школьные подростковые годы?", a:["Дина","Алина","Лейла","Карина"], correct:0,
+    photo:"photos/116.jpg", cap:"Школьные подруги навсегда" },
+  { q:"Кем Диляра хотела стать в детстве?", a:["Врачом","Модельером","Учителем","Космонавтом"], correct:1,
+    photo:"photos/124.jpg", cap:"Я — пиратка!" },
+  { q:"В какой гимназии училась Диляра?", a:["№ 5","№ 23","№ 76","№ 117"], correct:2,
+    photo:"photos/119.jpg", cap:"Школьные годы" },
+  { q:"Куда бы поступила Диляра, если бы не МГИМО?", a:["ВШЭ","Британская школа дизайна","МГУ","Сорбонна"], correct:1,
+    photo:"photos/115.jpg", cap:"С микрофоном — как дома" },
+  { q:"Какую машину выбрала бы Диляра?", a:["Mini Cooper","Range Rover","Porsche","Jeep Wrangler"], correct:0,
+    photo:"photos/121.jpg", cap:"Москва, прогулки" },
+  { q:"Как звали самую нелюбимую учительницу Диляры в школе?", a:["Вера Борисовна","Нина Петровна","Ольга Ивановна","Галина Сергеевна"], correct:0,
+    photo:"photos/123.jpg", cap:"Школа уже позади" },
+  { q:"С кем из семьи у Диляры родимое пятно один в один?", a:["Мама","Папа","Бабушка","Дедушка"], correct:1,
+    photo:"photos/122.jpg", cap:"Семья — это всё" },
+  { q:"Какую серию книг Диляра прочитала от и до?", a:["Властелин колец","Гарри Поттер","Сумерки","Голодные игры"], correct:1,
+    photo:"photos/113.jpg", cap:"Магия настроения" },
+  { q:"Сколько стран Диляра посетила за всю жизнь?", a:["20","30","45","60"], correct:2,
+    photo:"photos/119.jpg", cap:"Antalya, Türkiye 🇹🇷" },
+  { q:"Какой её самый любимый цвет?", a:["Синий","Зелёный","Красный","Фиолетовый"], correct:1,
+    photo:"photos/117.jpg", cap:"Зелёный лес, белые цветы" },
+  { q:"Где работает Диляра?", a:["МТС","Билайн","МегаФон","Tele2"], correct:0,
+    photo:"photos/112.jpg", cap:"Power look" },
+  { q:"Какой спорт Диляра любит больше всех и часто советует?", a:["Йога","Бег","Плавание","Теннис"], correct:1,
+    photo:"photos/128.jpg", cap:"С талисманом ЦСКА" },
+  { q:"Сколько публикаций у Диляры в Инстаграме?", a:["198","412","640","827"], correct:1,
+    photo:"photos/113.jpg", cap:"Один из тех самых постов" },
+  { q:"Как называется фильм, который Диляра сняла с Олегом?", a:["Тихий гром","Бесшумные молнии","Громкая тишина","Ночные искры"], correct:1,
+    photo:"photos/127.jpg", cap:"Олег и Диляра" },
+  { q:"В каком году Диляра впервые побывала в Нью-Йорке?", a:["2014","2017","2019","2021"], correct:1,
+    photo:"photos/118.jpg", cap:"Путешествия" },
+  { q:"Любимый фильм детства Диляры?", a:["Титаник","Крёстный отец","Король Лев","Один дома"], correct:1,
+    photo:"photos/111.jpg", cap:"Фотобудка, классика" },
+  { q:"Кого пасла Диляра в деревне?", a:["Коров","Гусей","Овец","Кур"], correct:1,
+    photo:"photos/124.jpg", cap:"Деревенское детство" },
+  { q:"Во сколько лет Диляра впервые убежала из садика и сама дошла до дома?", a:["3 года","4 года","5 лет","6 лет"], correct:0,
+    photo:"photos/124.jpg", cap:"Беглянка с пелёнок" },
+  { q:"Во сколько лет Диляра решила, что будет жить в Москве?", a:["6 лет","8 лет","12 лет","16 лет"], correct:1,
+    photo:"photos/125.jpg", cap:"Москва, мечта сбылась" },
+  { q:"Какая картина в Третьяковке произвела на маленькую Диляру самое сильное впечатление?", a:["Богатыри","Три медведя","Грачи прилетели","Девочка с персиками"], correct:1,
+    photo:"photos/126.jpg", cap:"С котиком на плече" },
+  { q:"Как официально звучит должность Диляры?", a:["CEO","CTO","CPO","СССР"], correct:2,
+    photo:"photos/115.jpg", cap:"На сцене" },
+  { q:"Сколько у Диляры родных и двоюродных братьев и сестёр?", a:["8","12","18","24"], correct:2,
+    photo:"photos/111.jpg", cap:"Большая семья" },
+  { q:"Сколько подписчиков у Диляры в Telegram-канале?", a:["5","48","67","85"], correct:2,
+    photo:"photos/130.jpg", cap:"С любовью — Диляра" },
+];
+
+const LETTERS = ["А","Б","В","Г"];
+const COMBO_PHRASES = ["Огонь! 🔥","Серия!","Ты в ударе!","Невероятно!","Машина!","Хет-трик!","Легенда!","Дилярaмастер!"];
+let idx=0, score=0, streak=0, maxStreak=0, locked=false, playerName="", muted=false;
+const card = document.getElementById('card');
+
+(function spawnBalloons(){
+  const emojis = ["🎈","🎂","🎁","🌸","✨","🥳","🍰","💐"];
+  const el = document.getElementById('balloons');
+  for(let i=0;i<14;i++){
+    const b = document.createElement('div');
+    b.className='balloon';
+    b.textContent = emojis[i%emojis.length];
+    b.style.left = (Math.random()*100)+'%';
+    b.style.animationDuration = (14+Math.random()*16)+'s';
+    b.style.animationDelay = (-Math.random()*20)+'s';
+    b.style.fontSize = (24+Math.random()*28)+'px';
+    el.appendChild(b);
+  }
+})();
+
+const cvs = document.getElementById('confetti-canvas');
+const ctx = cvs.getContext('2d');
+function resizeCvs(){ cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
+window.addEventListener('resize', resizeCvs); resizeCvs();
+let particles = [];
+const COLORS = ["#3fd98a","#f5c451","#ff7eb6","#eafff3","#8ad9ff"];
+function burst(x, y, n=60, power=1){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2;
+    const s = (3 + Math.random()*6) * power;
+    particles.push({
+      x, y,
+      vx: Math.cos(a)*s,
+      vy: Math.sin(a)*s - 3*power,
+      g: 0.18,
+      size: 4 + Math.random()*5,
+      rot: Math.random()*Math.PI,
+      vr: (Math.random()-.5)*0.3,
+      color: COLORS[Math.floor(Math.random()*COLORS.length)],
+      life: 100 + Math.random()*50,
+      shape: Math.random()<.5?'rect':'circ'
+    });
+  }
+  if(!animRunning) loopAnim();
+}
+let animRunning=false;
+function loopAnim(){
+  animRunning=true;
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=p.g; p.rot+=p.vr; p.life--;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+    ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, Math.min(1, p.life/60));
+    if(p.shape==='rect'){ ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.4); }
+    else{ ctx.beginPath(); ctx.arc(0,0,p.size/1.4,0,Math.PI*2); ctx.fill(); }
+    ctx.restore();
+  });
+  particles = particles.filter(p=>p.life>0 && p.y<cvs.height+50);
+  if(particles.length){ requestAnimationFrame(loopAnim); }
+  else{ animRunning=false; ctx.clearRect(0,0,cvs.width,cvs.height); }
+}
+function fireworks(){
+  const cx = cvs.width/2;
+  burst(cx, cvs.height*0.4, 90, 1.4);
+  setTimeout(()=>burst(cvs.width*0.25, cvs.height*0.45, 70, 1.2), 250);
+  setTimeout(()=>burst(cvs.width*0.75, cvs.height*0.45, 70, 1.2), 500);
+  setTimeout(()=>burst(cx, cvs.height*0.35, 100, 1.5), 800);
+}
+
+let ac=null;
+function tone(freq, dur=0.12, type='sine', vol=0.08){
+  if(muted) return;
+  try{
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.value=vol;
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function sndCorrect(){ tone(660,.08,'triangle',.08); setTimeout(()=>tone(990,.12,'triangle',.08),70); }
+function sndWrong(){ tone(220,.18,'sawtooth',.06); }
+function sndClick(){ tone(440,.04,'square',.03); }
+function sndFinish(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.15,'triangle',.09), i*120)); }
+
+function muteBtn(){
+  return `<button class="mute" id="mute" aria-label="Звук" title="Звук">${muted?'🔇':'🔊'}</button>`;
+}
+
+function intro(){
+  card.classList.remove('shake','pulse');
+  const heroBlock = HERO_PHOTO
+    ? `<div class="hero-pol"><div class="tape"></div><img src="${HERO_PHOTO}" alt="Диляра"><div class="cap">${HERO_CAP}</div></div>`
+    : `<div class="photo-ph">🎂</div>`;
+  card.innerHTML = `
+    ${muteBtn()}
+    ${heroBlock}
+    <p class="eyebrow">Викторина ко дню рождения</p>
+    <h1>Насколько хорошо ты знаешь <span class="accent">Диляру</span>?</h1>
+    <p class="lede">${QUESTIONS.length} вопросов про факты, привычки и истории из её жизни. За серии правильных ответов — бонусы! Введи имя — и поехали 🚀</p>
+    <input class="field" id="name" placeholder="Как тебя зовут?" maxlength="24" autocomplete="off">
+    <button class="btn" id="go">Начать викторину</button>
+  `;
+  bindMute();
+  const input = document.getElementById('name');
+  const go = document.getElementById('go');
+  input.focus();
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') go.click(); });
+  go.addEventListener('click',()=>{
+    const v = input.value.trim();
+    if(!v){ input.focus(); input.style.borderColor='var(--wrong)'; card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'),500); return; }
+    playerName = v; idx=0; score=0; streak=0; maxStreak=0;
+    sndClick();
+    render();
+  });
+}
+
+function bindMute(){
+  const m = document.getElementById('mute');
+  if(!m) return;
+  m.addEventListener('click', ()=>{
+    muted = !muted;
+    m.textContent = muted?'🔇':'🔊';
+    if(!muted) sndClick();
+  });
+}
+
+function render(){
+  const item = QUESTIONS[idx];
+  locked=false;
+  const pct = Math.round((idx/QUESTIONS.length)*100);
+  const streakHtml = streak>=2 ? `<span class="streak-pill" key="${streak}">🔥 ${streak}</span>` : '';
+  // случайный наклон для polaroid, чтобы выглядело живо
+  const rot = [-3,-2,-1.5,2,2.5,3,-2.5,1.8][idx % 8];
+  const polaroid = item.photo
+    ? `<div class="q-pol" style="--rot:${rot}deg;transform:rotate(${rot}deg)">
+         <div class="tape"></div>
+         <img src="${item.photo}" alt="">
+         <div class="cap">${escapeHtml(item.cap||'')}</div>
+       </div>` : '';
+  card.innerHTML = `
+    ${muteBtn()}
+    <div class="top">
+      <span class="count">Вопрос ${idx+1} из ${QUESTIONS.length}</span>
+      <span class="pills">
+        ${streakHtml}
+        <span class="score-pill">★ ${score}</span>
+      </span>
+    </div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    ${polaroid}
+    <p class="q">${item.q}</p>
+    <div class="opts" id="opts"></div>
+    <button class="btn next hidden" id="next">${idx===QUESTIONS.length-1?'Показать результат 🎉':'Следующий вопрос →'}</button>
+  `;
+  bindMute();
+  const opts = document.getElementById('opts');
+  item.a.forEach((text,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<span class="dot">${LETTERS[i]}</span><span>${text}</span>`;
+    b.addEventListener('click',(e)=>{
+      const r = document.createElement('span');
+      r.className='ripple';
+      const rect = b.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      r.style.width = r.style.height = size+'px';
+      r.style.left = (e.clientX - rect.left - size/2)+'px';
+      r.style.top  = (e.clientY - rect.top  - size/2)+'px';
+      b.appendChild(r); setTimeout(()=>r.remove(), 650);
+      choose(i, b);
+    });
+    opts.appendChild(b);
+  });
+}
+
+function showCombo(text){
+  const f = document.createElement('div');
+  f.className='combo-flash';
+  f.textContent = text;
+  card.appendChild(f);
+  setTimeout(()=>f.remove(), 1200);
+}
+
+function choose(i, btn){
+  if(locked) return; locked=true;
+  const item=QUESTIONS[idx];
+  [...document.querySelectorAll('.opt')].forEach((b,j)=>{
+    b.disabled=true;
+    if(j===item.correct) b.classList.add('correct');
+    if(j===i && i!==item.correct) b.classList.add('wrong');
+  });
+
+  if(i===item.correct){
+    score++; streak++;
+    if(streak>maxStreak) maxStreak=streak;
+    sndCorrect();
+    const r = btn.getBoundingClientRect();
+    burst(r.left + r.width/2, r.top + r.height/2, 26, 0.9);
+    card.classList.add('pulse'); setTimeout(()=>card.classList.remove('pulse'), 500);
+    if(streak>=3){
+      const phrase = COMBO_PHRASES[Math.min(streak-3, COMBO_PHRASES.length-1)];
+      showCombo(`x${streak} ${phrase}`);
+      if(streak>=5){
+        burst(window.innerWidth/2, window.innerHeight/2, 60, 1.3);
+      }
+    }
+  } else {
+    streak=0;
+    sndWrong();
+    card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'), 460);
+  }
+
+  const nx=document.getElementById('next');
+  nx.classList.remove('hidden');
+  nx.addEventListener('click',()=>{
+    sndClick();
+    if(idx===QUESTIONS.length-1) finish();
+    else { idx++; render(); }
+  });
+}
+
+async function finish(){
+  const total=QUESTIONS.length, pct=score/total;
+  let emoji,verdict,msg;
+  if(pct===1){emoji="👑";verdict="Идеально!";msg="Ты знаешь Диляру лучше, чем она сама себя!";}
+  else if(pct>=0.75){emoji="🌟";verdict="Почти эксперт!";msg="Отличный результат — ты явно из ближнего круга.";}
+  else if(pct>=0.5){emoji="🙂";verdict="Неплохо!";msg="Кое-что знаешь, но есть куда расти.";}
+  else {emoji="😅";verdict="Есть пробелы";msg="Самое время узнать Диляру поближе!";}
+
+  card.innerHTML=`
+    ${muteBtn()}
+    <div class="result">
+      <div class="confetti">${emoji}</div>
+      <p class="eyebrow">Результат — ${escapeHtml(playerName)}</p>
+      <div class="big-score">${score}/${total}</div>
+      <p class="verdict">${verdict}</p>
+      <p class="lede" style="margin-bottom:8px">${msg}</p>
+      <div class="spinner" id="sp"></div>
+    </div>`;
+  bindMute();
+
+  sndFinish();
+  if(pct>=0.5) fireworks();
+
+  let board=null;
+  try{
+    const res = await fetch('/api/submit',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name:playerName, score, total })
+    });
+    if(res.ok) board = await res.json();
+  }catch(e){ board=null; }
+
+  // Фоллбэк-лидерборд на localStorage (если бэка нет)
+  if(!board){
+    try{
+      const key='dilyara_lb_v1';
+      const list = JSON.parse(localStorage.getItem(key)||'[]');
+      list.push({name:playerName, score, total, ts:Date.now()});
+      localStorage.setItem(key, JSON.stringify(list));
+      const bestByName = {};
+      for(const x of list){
+        if(!(x.name in bestByName) || x.score > bestByName[x.name].score) bestByName[x.name] = x;
+      }
+      const top = Object.values(bestByName).sort((a,b)=>b.score-a.score).slice(0,5);
+      const count = list.length;
+      const best = count? Math.max(...list.map(x=>x.score)) : 0;
+      const avg = count? (list.reduce((s,x)=>s+x.score,0)/count).toFixed(1) : '0';
+      board = {count, best, avg, top, _local:true};
+    }catch(e){}
+  }
+  showResult(emoji,verdict,msg,board);
+}
+
+function showResult(emoji,verdict,msg,board){
+  const total=QUESTIONS.length;
+  let lbHtml='';
+  if(board && board.top){
+    const stats = `
+      <div class="stats">
+        <div class="stat"><b>${board.count}</b><span>прошли</span></div>
+        <div class="stat"><b>${board.avg}</b><span>средний балл</span></div>
+        <div class="stat"><b>${board.best}</b><span>рекорд</span></div>
+      </div>`;
+    const rows = board.top.map((r,i)=>`
+      <div class="lb-row ${r.name===playerName && r.score===score ? 'me':''}" style="animation-delay:${i*0.08}s">
+        <span class="lb-rank">${i+1}</span>
+        <span class="lb-name">${i===0?'👑 ':''}${escapeHtml(r.name)}</span>
+        <span class="lb-score">${r.score}/${total}</span>
+      </div>`).join('');
+    const localNote = board._local ? `<p class="muted-small">📱 Топ показывает результаты, прошедшие в этом браузере</p>` : '';
+    lbHtml = `${stats}<p class="lb-title">🏆 Топ знатоков Диляры</p>${rows}${localNote}`;
+  } else {
+    lbHtml = `<p class="muted-small">Таблица лидеров недоступна. Результат у тебя на экране 👆</p>`;
+  }
+  const streakLine = maxStreak>=3 ? `<p class="muted-small">🔥 Лучшая серия: <b style="color:var(--pink)">${maxStreak}</b> подряд</p>` : '';
+  card.innerHTML=`
+    ${muteBtn()}
+    <div class="result">
+      <div class="confetti">${emoji}</div>
+      <p class="eyebrow">Результат — ${escapeHtml(playerName)}</p>
+      <div class="big-score">${score}/${total}</div>
+      <p class="verdict">${verdict}</p>
+      <p class="lede" style="margin-bottom:6px">${msg}</p>
+      ${streakLine}
+    </div>
+    ${lbHtml}
+    <div class="actions">
+      <button class="btn ghost" id="again">Ещё раз</button>
+      <button class="btn gold" id="share">Поделиться</button>
+    </div>
+  `;
+  bindMute();
+  document.getElementById('again').addEventListener('click',()=>{ sndClick(); intro(); });
+  document.getElementById('share').addEventListener('click', shareResult);
+}
+
+async function shareResult(){
+  sndClick();
+  const total=QUESTIONS.length;
+  const text = `Я ${score}/${total} в викторине про Диляру 🎂 А ты сколько? ${location.href}`;
+  if(navigator.share){
+    try{ await navigator.share({title:'Викторина про Диляру', text, url:location.href}); return; }catch(e){}
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('share');
+    const old = btn.textContent;
+    btn.textContent = 'Скопировано ✓';
+    setTimeout(()=>{ btn.textContent = old; }, 1600);
+  }catch(e){
+    prompt('Скопируй текст:', text);
+  }
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+intro();
+</script>
+</body>
+</html>
